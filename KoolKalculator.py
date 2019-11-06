@@ -23,34 +23,70 @@ from tkinter import *
 # editMenu = Menu(menu)
 # menu.add_cascade(label="Edit", menu=editMenu)
 
-def printButtonValue(value):
+# Handles the display when buttons are pressed
+def printButton(value):
     global displayAccumulator
-    displayAccumulator += int(value)
-    displayFrame.config(text=str(displayAccumulator))
+    if len(displayAccumulator) >= 8:
+        displayAccumulator = displayAccumulator[0:-1] + value
+    else:
+        displayAccumulator += str(value)
+    displayLabel.config(text=str(displayAccumulator))
+
+#def operationIn():
+
 
 
 if __name__ == "__main__":
     MainWindow = Tk()
     MainWindow.title("KoolKalculator")
 
-    displayFrame = Label(MainWindow)
-    displayAccumulator = 0
+    #Grid.rowconfigure(MainWindow, 1, weight=1)
+    #Grid.columnconfigure(MainWindow, 0, weight=1)
 
-    displayFrame.grid()
+    # Window is composed to two sections: Display and NumberPad
+    # DisplayFrame
+    displayLabel = Label(MainWindow)
+    displayAccumulator = ''
+    displayLabel.pack(side=TOP, expand=True, fill='both')
+
+    # NumberPad
+    numberPadFrame = Frame(MainWindow)
+    numberPadFrame.pack(side=TOP, expand=True, fill='both')
+
     # Button List
     buttons = []
-    for i in range(0, 10):
-        buttons.append(Button(text=str(i), command=lambda c=i: printButtonValue(buttons[c].cget('text'))))
+    for i in range(1, 10):
+        buttons.append(Button(numberPadFrame, text=str(i), command=lambda c=i: printButton(buttons[c-1].cget('text'))))
+    zeroButton = Button(numberPadFrame, text='0', command=lambda: printButton('0'))
+    deciButton = Button(numberPadFrame, text='.', command=lambda: printButton('0.1'))
+
+    # Operation Buttons
+    plusButton = Button(numberPadFrame, text='+')
+    minusButton = Button(numberPadFrame, text='-')
+    multButton = Button(numberPadFrame, text='x')
+    divButton = Button(numberPadFrame, text='/')
 
     # Place Buttons in grid
-    buttons[1].grid(row=3)
-    buttons[2].grid(row=3, column=1)
-    buttons[3].grid(row=3, column=2)
-    buttons[4].grid(row=2, column=0)
-    buttons[5].grid(row=2, column=1)
-    buttons[6].grid(row=2, column=2)
-    buttons[7].grid(row=1, column=0)
-    buttons[8].grid(row=1, column=1)
-    buttons[9].grid(row=1, column=2)
+    for i in range(0, 4):
+        Grid.rowconfigure(numberPadFrame, i, weight=1)
+        Grid.columnconfigure(numberPadFrame, i, weight=1)
+
+    buttons[0].grid(sticky=N+S+E+W, row=2, column=0)
+    buttons[1].grid(sticky=N+S+E+W, row=2, column=1)
+    buttons[2].grid(sticky=N+S+E+W, row=2, column=2)
+    buttons[3].grid(sticky=N+S+E+W, row=1, column=0)
+    buttons[4].grid(sticky=N+S+E+W, row=1, column=1)
+    buttons[5].grid(sticky=N+S+E+W, row=1, column=2)
+    buttons[6].grid(sticky=N+S+E+W, row=0, column=0)
+    buttons[7].grid(sticky=N+S+E+W, row=0, column=1)
+    buttons[8].grid(sticky=N+S+E+W, row=0, column=2)
+
+    zeroButton.grid(sticky=N+S+E+W, row=3, columnspan=2)
+    deciButton.grid(sticky=N+S+E+W, row=3, column=2)
+
+    plusButton.grid(sticky=N+S+E+W, row=0, column=3)
+    minusButton.grid(sticky=N+S+E+W, row=1, column=3)
+    multButton.grid(sticky=N+S+E+W, row=2, column=3)
+    divButton.grid(sticky=N+S+E+W, row=3, column=3)
 
     MainWindow.mainloop()
