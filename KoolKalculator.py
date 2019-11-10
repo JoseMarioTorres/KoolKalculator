@@ -6,26 +6,26 @@
 
 from tkinter import *
 
-# Handles the display of the calculator
+
 def display():
+    '''Handles the display of the calculator'''
     temp = ''
     for i in range(0, len(operators)):
         temp += operands[i] + operators[i]
     temp += operands[-1] # There is one more operands than operator
     displayLabel.config(text=temp)
-    print(displayLabel.cget("text"))
 
-maxCharOnDisplay = 17
-# Appends operators into list, moves to the next operand
+
 def operationIn(_operator):
+    '''Appends operators into list, moves to the next operand'''
     if len(displayLabel.cget("text")) >= maxCharOnDisplay:
         return
     operators.append(_operator)
     operands.append('')# Create a placeholder
     display()
 
-# Performs the operation
 def performOper():
+    '''Performs the operation by evaluating the string expression'''
     global operands
     global operators
     temp = displayLabel.cget("text")
@@ -34,8 +34,9 @@ def performOper():
     operators = []
     display()
 
-# Clears the last operand or all operands/operators
+
 def clear(value):
+    '''Clears the last expression('c') or all operands/operators('ce')'''
     global operands
     global operators
     if operands == ['']:
@@ -50,8 +51,9 @@ def clear(value):
         operands[-1] = ''
     display()
 
-# Appends the number pressed on the calculator to the latest operand
+
 def addNumber(value):
+    '''Appends the number pressed on the calculator to the latest operand'''
     global operands
     if len(displayLabel.cget("text")) >= maxCharOnDisplay:
         lastOperand = operands[-1]
@@ -71,6 +73,7 @@ if __name__ == "__main__":
     displayLabel = Label(MainWindow)
     operands = ['']
     operators = []
+    maxCharOnDisplay = 17
     displayLabel.pack(side=TOP, expand=True, fill='both')
 
     # NumberPad
