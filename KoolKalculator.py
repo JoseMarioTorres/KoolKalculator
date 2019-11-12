@@ -12,7 +12,7 @@ def display():
     temp = ''
     for i in range(0, len(operators)):
         temp += operands[i] + operators[i]
-    temp += operands[-1] # There is one more operands than operator
+    temp += operands[-1]  # There is one more operands than operator
     displayLabel.config(text=temp)
 
 
@@ -21,8 +21,9 @@ def operationIn(_operator):
     if len(displayLabel.cget("text")) >= maxCharOnDisplay:
         return
     operators.append(_operator)
-    operands.append('')# Create a placeholder
+    operands.append('')  # Create a placeholder
     display()
+
 
 def performOper():
     '''Performs the operation by evaluating the string expression'''
@@ -64,17 +65,46 @@ def addNumber(value):
     display()
 
 
+def darkMode():
+    global buttons
+    global operationButtons
+    global miscButton
+    global displayLabel
+    global menu
+    global submenu
+
+    menu.config(bg='black', fg='white')
+    submenu.config(bg='black', fg='white')
+
+    for button in buttons:
+        button.config(bg='black', fg='white')
+    for button in operationButtons:
+        button.config(bg='black', fg='white')
+    for button in miscButton:
+        button.config(bg='black', fg='white')
+    displayLabel.config(bg='black', fg='white')
+    statusLabel.config(bg='black', fg='white')
+
+
 if __name__ == "__main__":
     MainWindow = Tk()
     MainWindow.title("KoolKalculator")
 
-    # Window is composed to two sections: Display and NumberPad
+    # Window is composed to four sections: Toolbar, Display, NumberPad and Status bar
+    # Toolbar
+    menu = Menu(MainWindow)
+    MainWindow.config(menu=menu)
+    submenu = Menu(menu)
+    menu.add_cascade(label='File', menu=submenu)
+    submenu.add_command(label="DARK MODE", command=darkMode)
+    submenu.add_separator()
+
     # DisplayFrame
-    displayLabel = Label(MainWindow)
+    displayLabel = Label(MainWindow, font={15})
     operands = ['']
     operators = []
     maxCharOnDisplay = 17
-    displayLabel.pack(side=TOP, expand=True, fill='both')
+    displayLabel.pack(side=TOP, expand=True, fill='both', ipadx='10', ipady='15')
 
     # NumberPad
     numberPadFrame = Frame(MainWindow)
@@ -83,45 +113,38 @@ if __name__ == "__main__":
     # Button List
     buttons = []
     for i in range(1, 10):
-        buttons.append(Button(numberPadFrame, text=str(i), command=lambda c=i: addNumber(buttons[c-1].cget('text'))))
-    zeroButton = Button(numberPadFrame, text='0', command=lambda: addNumber('0'))
-    deciButton = Button(numberPadFrame, text='.', command=lambda: addNumber('.'))
+        buttons.append(Button(numberPadFrame, text=str(i), command=lambda c=i: addNumber(buttons[c - 1].cget('text'))))
+    buttons.append(Button(numberPadFrame, text='0', command=lambda: addNumber('0')))  # 10
+    buttons.append(Button(numberPadFrame, text='.', command=lambda: addNumber('.')))  # 11
 
     # Operation Buttons
-    addButton = Button(numberPadFrame, text='+', command=lambda: operationIn('+'))
-    subButton = Button(numberPadFrame, text='-', command=lambda: operationIn('-'))
-    multButton = Button(numberPadFrame, text='*', command=lambda: operationIn('*'))
-    divButton = Button(numberPadFrame, text='/', command=lambda: operationIn('/'))
+    operationButtons = [Button(numberPadFrame, text='+', command=lambda: operationIn('+')),
+                        Button(numberPadFrame, text='-', command=lambda: operationIn('-')),
+                        Button(numberPadFrame, text='*', command=lambda: operationIn('*')),
+                        Button(numberPadFrame, text='/', command=lambda: operationIn('/'))]
 
-    execButton = Button(numberPadFrame, text='ENTER', command=performOper)
-    cButton = Button(numberPadFrame, text='C', command=lambda: clear('c'))
-    ceButton = Button(numberPadFrame, text='CE', command=lambda: clear('ce'))
+    miscButton = [Button(numberPadFrame, text='ENTER', command=performOper),
+                  Button(numberPadFrame, text='C', command=lambda: clear('c')),
+                  Button(numberPadFrame, text='CE', command=lambda: clear('ce'))]
 
     # Place Buttons in grid
     for i in range(0, 5):
         Grid.rowconfigure(numberPadFrame, i, weight=1)
         Grid.columnconfigure(numberPadFrame, i, weight=1)
 
-    buttons[0].grid(sticky=N+S+E+W, row=3, column=0)
-    buttons[1].grid(sticky=N+S+E+W, row=3, column=1)
-    buttons[2].grid(sticky=N+S+E+W, row=3, column=2)
-    buttons[3].grid(sticky=N+S+E+W, row=2, column=0)
-    buttons[4].grid(sticky=N+S+E+W, row=2, column=1)
-    buttons[5].grid(sticky=N+S+E+W, row=2, column=2)
-    buttons[6].grid(sticky=N+S+E+W, row=1, column=0)
-    buttons[7].grid(sticky=N+S+E+W, row=1, column=1)
-    buttons[8].grid(sticky=N+S+E+W, row=1, column=2)
+    for i in range(0, 9):
+        buttons[i].grid(sticky=N + S + E + W, row=3 - int(i / 3), column=i % 3)
+    buttons[9].grid(sticky=N + S + E + W, row=4, columnspan=2)  # zero
+    buttons[10].grid(sticky=N + S + E + W, row=4, column=2)  # decimal
 
-    zeroButton.grid(sticky=N+S+E+W, row=4, columnspan=2)
-    deciButton.grid(sticky=N+S+E+W, row=4, column=2)
+    for i in range(0, 4):
+        operationButtons[i].grid(sticky=N + S + E + W, row=1 + i, column=3)
 
-    addButton.grid(sticky=N+S+E+W, row=1, column=3)
-    subButton.grid(sticky=N+S+E+W, row=2, column=3)
-    multButton.grid(sticky=N+S+E+W, row=3, column=3)
-    divButton.grid(sticky=N+S+E+W, row=4, column=3)
+    miscButton[0].grid(sticky=N + S + E + W, row=1, rowspan=4, column=4)  # Execution Button("Enter")
+    miscButton[1].grid(sticky=N + S + E + W, row=0, columnspan=2, column=0)  # Clear Button("c")
+    miscButton[2].grid(sticky=N + S + E + W, row=0, columnspan=3, column=2)  # Clear Everything("ce")
 
-    execButton.grid(sticky=N+S+E+W, row=1, rowspan=4, column=4)
-    cButton.grid(sticky=N+S+E+W, row=0, columnspan=2, column=0)
-    ceButton.grid(sticky=N+S+E+W, row=0, columnspan=3, column=2)
+    statusLabel = Label(MainWindow, text="Status")
+    statusLabel.pack(side=BOTTOM, fill=X)
 
     MainWindow.mainloop()
